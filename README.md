@@ -20,13 +20,15 @@ stores the value of the variable.
 
 It always return a `{ __match__: true }` in the match object.
 
-```
-match("$foo", "hello")      // { "__match__": true, foo: "hello"}
-match("$bar", 3)            // { "__match__": true, bar: 3}
-match("$baz", true)         // { "__match__": true, baz: true}
-match("$quux", null)        // { "__match__": true, quux: null}
-match("$quuz", NaN)         // { "__match__": true, quuz: NaN}
-match("$xyzzy", undefined)  // { "__match__": true, xyzzy: undefined}
+```javascript
+
+match("$foo", "hello") // { "__match__": true, foo: "hello"}
+match("$bar", 3) // { "__match__": true, bar: 3}
+match("$baz", true) // { "__match__": true, baz: true}
+match("$quux", null) // { "__match__": true, quux: null}
+match("$quuz", NaN) // { "__match__": true, quuz: NaN}
+match("$xyzzy", undefined) // { "__match__": true, xyzzy: undefined}
+
 ```
 
 Note: The match object contains a key `__match__` by default to indicate the
