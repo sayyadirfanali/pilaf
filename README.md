@@ -22,12 +22,23 @@ It always return a `{ __match__: true }` in the match object.
 
 ```javascript
 
-match("$foo", "hello") // { "__match__": true, foo: "hello"}
-match("$bar", 3) // { "__match__": true, bar: 3}
-match("$baz", true) // { "__match__": true, baz: true}
-match("$quux", null) // { "__match__": true, quux: null}
-match("$quuz", NaN) // { "__match__": true, quuz: NaN}
-match("$xyzzy", undefined) // { "__match__": true, xyzzy: undefined}
+match("$foo", "hello")
+// returns { "__match__": true, foo: "hello"}
+
+match("$bar", 3)
+// returns { "__match__": true, bar: 3}
+
+match("$baz", true)
+// returns { "__match__": true, baz: true}
+
+match("$quux", null)
+// returns { "__match__": true, quux: null}
+
+match("$quuz", NaN)
+// returns { "__match__": true, quuz: NaN}
+
+match("$xyzzy", undefined)
+// returns { "__match__": true, xyzzy: undefined}
 
 ```
 
@@ -39,15 +50,33 @@ contain the value of the variable in the key `__match__`.
 ### Equality Pattern
 It works like regular equality comparison and returns a `{ __match__: true }` match object if
 the pattern is equal to the value and a `false` match object otherwise.
-```
-match("hello", "hello") // { "__match__": true }
-match("hello", "world") // { "__match__": false }
-match("hello", 2) // { "__match__": false }
-match(2, 2) // { "__match__": true }
-match(2, 3) // { "__match__": false }
-match(undefined, undefined) // { "__match__": true }
-match(null, null) // { "__match__": true }
-match(NaN, NaN) // { "__match__": false}
+
+```javascript
+
+match("hello", "hello")
+// returns { "__match__": true }
+
+match("hello", "world")
+// returns { "__match__": false }
+
+match("hello", 2)
+// returns { "__match__": false }
+
+match(2, 2)
+// returns { "__match__": true }
+
+match(2, 3)
+// returns { "__match__": false }
+
+match(undefined, undefined)
+// returns { "__match__": true }
+
+match(null, null)
+// returns { "__match__": true }
+
+match(NaN, NaN)
+// returns { "__match__": false}
+
 ```
 
 ### Wildcard Pattern
@@ -57,10 +86,17 @@ variable is not needed.
 
 It always returns `{ __match__: true }` in the match object.
 
-```
-match("_foo", "hello") // { __match__: true }
-match("_bar", 2) // { __match__: true }
-match("_baz", true) // { __match__: true }
+```javascript
+
+match("_foo", "hello")
+// returns { __match__: true }
+
+match("_bar", 2)
+// returns { __match__: true }
+
+match("_baz", true)
+// returns { __match__: true }
+
 ```
 
 ### Array Pattern
@@ -68,28 +104,49 @@ It recursively matches an array. It is declared exactly like an array and can
 contain other patterns in elements. It is matched recursively till a variable
 pattern, wildcard pattern or equality pattern is reached.
 
-```
-match([2, "$foo"], [2, 3]) // { __match__: true, foo: 3 }
-match([3, "$bar"], [5, 7]) // { __match__: false }
-match([2, 3, "$baz"], [2, 3, ["hello", "world"]]) // { __match__: true, baz: [ "hello", "world" ]}
-match([2, 3, ["hello", "$quux"]], [2, 3, ["hello", "world"]]) // { __match__: true, baz: "world"}
-match([3, "$quuz"], [3, { book: "Alice in Wonderland", author: "Lewis Carroll" }]) // { __match__: true, quux: { book: "Alice in Wonderland", author: "Lewis Carroll" }}
+```javascript
+
+match([2, "$foo"], [2, 3])
+// returns { __match__: true, foo: 3 }
+
+match([3, "$bar"], [5, 7])
+// returns { __match__: false }
+
+match([2, 3, "$baz"], [2, 3, ["hello", "world"]])
+// returns { __match__: true, baz: [ "hello", "world" ]}
+
+match([2, 3, ["hello", "$quux"]], [2, 3, ["hello", "world"]])
+// returns { __match__: true, baz: "world"}
+
+match([3, "$quuz"], [3, { book: "Alice in Wonderland", author: "Lewis Carroll" }])
+// returns { __match__: true, quux: { book: "Alice in Wonderland", author: "Lewis Carroll" }}
+
 ```
 
 It could also be used to match an array when the length of array is not known.
 If the last element of the array pattern starts with `...`, it matches the rest
 of the array.
 
-```
-match([2, "...$foo"], [3, 7, "hello", true]) // { __match__: true, foo: [3, 7, "hello", true]}
-match(["...$foo"], [2]) // { __match__: true, foo: [2]}
+``` javascript
+match([2, "...$foo"], [3, 7, "hello", true])
+// returns { __match__: true, foo: [3, 7, "hello", true]}
+
+match(["...$foo"], [2])
+// returns { __match__: true, foo: [2]}
+
 ```
 
 ### Object Pattern
 It recursively matches an object, just like array pattern.
-```
-match({ book: "$foo", author: "$bar" }, { book: "The Hobbit", author: "J.R.R. Tolkien" }) // { __match__: true, foo: "The Hobbit", bar: "J.R.R. Tolkien" }
-match({ authors: [ "Lewis Carroll", "Daniel Defoe", "J.R.R. Tolkien" ] }, { authors: [ "Lewis Carroll", $baz, "J.R.R. Tolkien" }) // { __match__: true, baz: "Daniel Defoe" }
+
+```javascript
+
+match({ book: "$foo", author: "$bar" }, { book: "The Hobbit", author: "J.R.R. Tolkien" })
+// returns { __match__: true, foo: "The Hobbit", bar: "J.R.R. Tolkien" }
+
+match({ authors: [ "Lewis Carroll", "Daniel Defoe", "J.R.R. Tolkien" ] }, { authors: [ "Lewis Carroll", $baz, "J.R.R. Tolkien" })
+// returns { __match__: true, baz: "Daniel Defoe" }
+
 ```
 
 ## License
