@@ -7,7 +7,7 @@ isBoolean = x => typeof x === "boolean";
 isNumber = x => typeof x === "number";
 isString = x => typeof x === "string";
 
-function match(pattern, value) {
+function check(pattern, value) {
   if (isString(pattern)) {
     // Wildcard Pattern
     if (pattern[0] === "_")
@@ -52,7 +52,7 @@ function match(pattern, value) {
     pattern.forEach((x, i) => {
       if (i < pLength - 1) {
         if (accumulator.__match__) {
-          let m = match(pattern[i], value[i]);
+          let m = check(pattern[i], value[i]);
 
           if (m.__match__) {
             Object.assign(accumulator, m);
@@ -90,7 +90,7 @@ function match(pattern, value) {
 
     pattern.forEach((x, i) => {
       if (accumulator.__match__) {
-        let m = match(pattern[i], value[i]);
+        let m = check(pattern[i], value[i]);
         if (m.__match__) {
           Object.assign(accumulator, m);
         }
@@ -116,7 +116,7 @@ function match(pattern, value) {
 
       pKeys.forEach((x, i) => {
         if (accumulator.__match__) {
-          let m = match(pattern[pKeys[i]], value[vKeys[i]]);
+          let m = check(pattern[pKeys[i]], value[vKeys[i]]);
           if (m.__match__) {
             Object.assign(accumulator, m);
           }
@@ -133,18 +133,67 @@ function match(pattern, value) {
   return { "__match__": false };
 }
 
-function run(a) {
-  y = match(a[0][0], a[0][1]);
+function match(value) {
+  this.case = (pattern) => {
+    if (this.result) {
+      return this;
+    }
 
-  if (y.__match__) {
-    return a[0][2](y);
+    this.match = check(pattern, value);
+    return this;
   }
 
-  if (a.length < 2) {
-    return { "__run__": false } ;
+  this.when = (filter) => {
+    if (this.result) {
+      return this;
+    }
+
+    if (this.match["__match__"]) {
+      if (filter(this.match)) {
+        this.match["__filter__"] = true;
+        return this;
+      }
+
+      this.match["__filter__"] = false;
+    }
+
+    return this;
   }
 
-  return run(a.slice(1));
+  this.otherwise = (filter) => {
+    if (this.result) {
+      return this;
+    }
+
+    this.match["__filter__"] = true;
+    return this;
+  }
+
+  this.run = (callback) => {
+    if (this.result) {
+      return this;
+    }
+
+    if (this.match["__match__"] && this.match["__filter__"]) {
+      this.result = callback(this.match);
+    }
+
+    return this;
+  }
+
+  this.return = () => {
+    return this.result;
+  }
+
+  return this;
 }
 
-console.log(match(["...$foo"], [2]));
+function factorial(n) {
+  return match(n)
+    .case("$n")
+      .when(x => x.n < 2) .run(() => 1)
+      .otherwise()        .run(x => x.n * factorial(x.n - 1))
+    .return();
+}
+
+console.log(factorial(4));

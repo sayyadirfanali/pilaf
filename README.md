@@ -1,153 +1,76 @@
 # pilaf
-pilaf is a pattern-matching micro-library for JavaScript which provides recursive
-pattern-matching for variables, arrays and objects in the style of Erlang and
-Haskell.
+pilaf is a simple pattern-matching library for JavaScript which provides
+recursive pattern-matching in the style of Erlang.
+
+if you're tired of writing chains of `if`, `else` and `switch` statements,
+pilaf can help you structure your code in the pattern-matching style popular in
+languages like Erlang and Haskell.
 
 ## Examples
-pilaf contains two functions, `match()` and `run()`.
+here is a simple function in traditional imperative-style in JavaScript
 
-`match()` takes a pattern and a value and returns a match object which
-indicates if the pattern matched the value.
+```javascript
+function factorial(n) {
+  if (n < 2)
+    return 1;
+  else
+    return n * factorial(n - 1);
+}
+```
 
-`run()` takes an array of arrays which contain pattern, value and callback as
-elements and tries patterns till one is matched and then runs the callback with
-the match object returned as the input and returns the result of the callback.
+here is how one would write it using pilaf in pattern-matching style in JavaScript
+
+```javascript
+
+function factorial(n) {
+  return match(n)
+    .case("$a")
+      .when(x => x.a < 1) .run(() => 1)
+      .otherwise()        .run(x => x.a * factorial(x.a - 1))
+    .return();
+}
+
+```
+
+here, the value `n` is matched on pattern `$n`. the match result is then
+filtered through the callback `x => x.n < 1` filter in `when`.
+
+if the filter returns `true`, the callback in `run` is executed. the return value
+of callback in `run` is returned by `return` in the end.
+
+if the filter returns `false`, `run` attached with `otherwise` is executed
+calls the function.
+
+there are many types of available patterns which can be recursively matched to
+variables, arrays and objects.
 
 ### Variable Pattern
-It begins with `$` and matches a variable of any type in JavaScript. The match
-object creates a key with the name supplied after `$` in the pattern which
-stores the value of the variable.
+variable patterns begin with "$". the string after the "$" is the key which
+stores the value and which can be accessed in `when` filters and `run`
+callbacks.
 
-It always return a `true` in the match object.
-
-```javascript
-
-match("$foo", "hello")
-// returns { "__match__": true, foo: "hello"}
-
-match("$bar", 3)
-// returns { "__match__": true, bar: 3}
-
-match("$baz", true)
-// returns { "__match__": true, baz: true}
-
-match("$quux", null)
-// returns { "__match__": true, quux: null}
-
-match("$quuz", NaN)
-// returns { "__match__": true, quuz: NaN}
-
-match("$xyzzy", undefined)
-// returns { "__match__": true, xyzzy: undefined}
-
-```
-
-Note: The match object contains a key `__match__` by default to indicate the
-success status of the match. If you use `$__match__` as pattern, the match
-object would not contain the success status of the match but would instead
-contain the value of the variable in the key `__match__`.
-
-### Equality Pattern
-It works like regular equality comparison and returns a `true` in the match object if
-the pattern is equal to the value and a `false` in the match object otherwise.
+variable pattern always matches the value.
 
 ```javascript
+> match(3).case("$a").run(x => "the value was x.a").return();
+the value was 3
 
-match("hello", "hello")
-// returns { "__match__": true }
+> match("world").case("$b").run(x => "hello, " + x.b).return();
+hello, world
 
-match("hello", "world")
-// returns { "__match__": false }
-
-match("hello", 2)
-// returns { "__match__": false }
-
-match(2, 2)
-// returns { "__match__": true }
-
-match(2, 3)
-// returns { "__match__": false }
-
-match(undefined, undefined)
-// returns { "__match__": true }
-
-match(null, null)
-// returns { "__match__": true }
-
-match(NaN, NaN)
-// returns { "__match__": false}
+> match
 
 ```
 
-### Wildcard Pattern
-It works almost like a variable pattern except that it begins with a `_` and
-the match object discards the value. It's normally used when the value of the
-variable is not needed.
+## Dependencies
+pilaf doesn't contain any dependencies and is written in vanilla JavaScript.
 
-It always returns `true` in the match object.
+## Credits
+pilaf is inspired from [match-toy](https://github.com/AlfonsoFilho/match-toy).
 
-```javascript
-
-match("_foo", "hello")
-// returns { __match__: true }
-
-match("_bar", 2)
-// returns { __match__: true }
-
-match("_baz", true)
-// returns { __match__: true }
-
-```
-
-### Array Pattern
-It recursively matches an array. It is declared exactly like an array and can
-contain other patterns in elements. It is matched recursively till a variable
-pattern, wildcard pattern or equality pattern is reached.
-
-```javascript
-
-match([2, "$foo"], [2, 3])
-// returns { __match__: true, foo: 3 }
-
-match([3, "$bar"], [5, 7])
-// returns { __match__: false }
-
-match([2, 3, "$baz"], [2, 3, ["hello", "world"]])
-// returns { __match__: true, baz: [ "hello", "world" ]}
-
-match([2, 3, ["hello", "$quux"]], [2, 3, ["hello", "world"]])
-// returns { __match__: true, baz: "world"}
-
-match([3, "$quuz"], [3, { book: "Alice in Wonderland", author: "Lewis Carroll" }])
-// returns { __match__: true, quux: { book: "Alice in Wonderland", author: "Lewis Carroll" }}
-
-```
-
-It could also be used to match an array when the length of array is not known.
-If the last element of the array pattern starts with `...`, it matches the rest
-of the array.
-
-``` javascript
-match([2, "...$foo"], [3, 7, "hello", true])
-// returns { __match__: true, foo: [3, 7, "hello", true]}
-
-match(["...$foo"], [2])
-// returns { __match__: true, foo: [2]}
-
-```
-
-### Object Pattern
-It recursively matches an object, just like array pattern.
-
-```javascript
-
-match({ book: "$foo", author: "$bar" }, { book: "The Hobbit", author: "J.R.R. Tolkien" })
-// returns { __match__: true, foo: "The Hobbit", bar: "J.R.R. Tolkien" }
-
-match({ authors: [ "Lewis Carroll", "Daniel Defoe", "J.R.R. Tolkien" ] }, { authors: [ "Lewis Carroll", $baz, "J.R.R. Tolkien" })
-// returns { __match__: true, baz: "Daniel Defoe" }
-
-```
+the difference is that while match-toy takes strings as patterns and parses
+them into JavaScript structures pilaf avoids parsing by taking JavaScript
+literals as patterns.
 
 ## License
 GNU General Public License, version 3.0
