@@ -56,8 +56,6 @@ returns the match result as shown below.
 
 ```
 
-the returned object is the same match result which was described above.
-
 there are many types of available patterns which can be recursively matched to
 variables, arrays and objects.
 
@@ -112,9 +110,6 @@ pattern is exactly equal to the value
 
 > check(2, 3)
 { __match__: false }
-
-> check("hello", "hello")
-{ __match__: true }
 
 > check(null, null)
 { __match__: true }
@@ -209,15 +204,7 @@ object patterns work just like array patterns, but take objects as patterns.
 Pilaf is written in vanilla JavaScript and doesn't feature any dependencies.
 
 ## Credits
-Pilaf is heavily inspired from
-[match-toy](https://github.com/AlfonsoFilho/match-toy).
-
-the main difference is that while Match-Toy takes strings as patterns and
-parses them into JavaScript structures, Pilaf avoids parsing by taking
-JavaScript literals as patterns.
-
-this means that Match-Toy covers more patterns than Pilaf but is little larger
-in size because it is more complex.
+Pilaf is heavily inspired from [Match-Toy](https://github.com/AlfonsoFilho/match-toy).
 
 ## License
-GNU General Public License, version 3.0
+GNU General Public License v3.0
