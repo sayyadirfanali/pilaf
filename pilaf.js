@@ -196,4 +196,4 @@ function factorial(n) {
     .return();
 }
 
-console.log(factorial(4));
+console.log(check({ author: "J.R.R. Tolkien", books: [ "$a", "...$b" ] }, { author: "J.R.R. Tolkien", books: [ "The Hobbit", "The Lord of the Rings", "The Silmarilion" ] } ));
