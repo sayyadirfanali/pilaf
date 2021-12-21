@@ -18,6 +18,10 @@ traditional imperative style in JavaScript
 
 function sum(a) {
   if (a.length === 0) {
+    return 0;
+  }
+
+  else if (a.length === 1) {
     return a[0];
   }
 
@@ -33,9 +37,10 @@ The same function be returned using Pilaf like
 ```javascript
 
 function sum(a) {
-  match(a)
-    .case(["$a"])             .run(x => x.a)
-    .case(["$a", "...$rest"]) .run(x => x.a + sum(rest))
+  return match(a)
+    .case([])                     .run(x => 0)
+    .case(["$element"])           .run(x => x.element)
+    .case(["$head", "...$tail"])  .run(x => x.head + sum(x.tail))
     .return();
 }
 
@@ -50,11 +55,28 @@ result from `case`.
 Even in this very simple example, it is easy to see that the pattern-matching declarative
 style is more concise and clear than traditional JavaScript.
 
+Pilaf provides `when` which can act like guard in Erlang and filters the value
+if the match is successful before executing `run`. The above function can be
+written using `when` as
+
+```javascript
+
+function sum(a) {
+  return match(a)
+    .case([])                         .run(x => 0)
+    .case(["$head", "...$tail"])
+      .when(x => x.tail.length === 0) .run(x => x.head)
+      .otherwise()                    .run(x => x.head + sum(x.tail))
+    .return();
+}
+
+
+```
+
 Pilaf also provides function `check` which just matches one pattern against one value.
 
-Pilaf features many different types of patterns which can be combined
-arbitratily effectively removing the need to use `if`, `else` and `switch` in
-the code.
+Pilaf features different types of patterns which can be combined arbitratily
+effectively avoiding the need to use `if`, `else` and `switch` in the code.
 
 ### Variable Patterns
 Variable patterns begin with `"$"`. The string after the `"$"` is the key which
@@ -187,12 +209,12 @@ Object patterns work just like array patterns, but take objects as patterns.
 
 > check(
 >   { author: "$a", books: [ "The Hobbit", "...$b" ] },
->   { author: "J.R.R. Tolkien", books: [ "The Hobbit", "The Lord of the Rings", "The Silmarilion" ] }
+>   { author: "J.R.R. Tolkien", books: [ "The Hobbit", "The Lord of the Rings", "The Silmarillion" ] }
 > )
 {
   __match__: true,
   a: "J.R.R. Tolkien",
-  b: [ "The Lord of the Rings", "The Silmarilion" ]
+  b: [ "The Lord of the Rings", "The Silmarillion" ]
 }
 
 ```

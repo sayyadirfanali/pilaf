@@ -51,10 +51,10 @@ function check(pattern, value) {
 
     pattern.forEach((x, i) => {
       if (i < pLength - 1) {
-        if (accumulator.__match__) {
+        if (accumulator["__match__"]) {
           let m = check(pattern[i], value[i]);
 
-          if (m.__match__) {
+          if (m["__match__"]) {
             Object.assign(accumulator, m);
           }
 
@@ -65,13 +65,13 @@ function check(pattern, value) {
       }
 
       if (i === pLength - 1) {
-        if (accumulator.__match__) {
+        if (accumulator["__match__"]) {
           if (pLength <= vLength) {
-            m = { "__match__": true, [ pLast.slice(4) ]: value.slice(i) };
+            let m = { "__match__": true, [ pLast.slice(4) ]: value.slice(i) };
             Object.assign(accumulator, m);
           }
           if (pLength === vLength + 1) {
-            m = { "__match__": true, [ pLast.slice(4) ]: [ ] };
+            let m = { "__match__": true, [ pLast.slice(4) ]: [ ] };
             Object.assign(accumulator, m);
           }
           if (pLength > vLength + 1) {
@@ -89,12 +89,12 @@ function check(pattern, value) {
     let accumulator = { "__match__": true };
 
     pattern.forEach((x, i) => {
-      if (accumulator.__match__) {
+      if (accumulator["__match__"]) {
         let m = check(pattern[i], value[i]);
-        if (m.__match__) {
+        if (m["__match__"]) {
           Object.assign(accumulator, m);
         }
-        if (not(m.__match__)) {
+        if (not(m["__match__"])) {
           accumulator = { "__match__": false };
         }
       }
@@ -115,12 +115,12 @@ function check(pattern, value) {
       let accumulator = { "__match__": true };
 
       pKeys.forEach((x, i) => {
-        if (accumulator.__match__) {
+        if (accumulator["__match__"]) {
           let m = check(pattern[pKeys[i]], value[vKeys[i]]);
-          if (m.__match__) {
+          if (m["__match__"]) {
             Object.assign(accumulator, m);
           }
-          if (not(m.__match__)) {
+          if (not(m["__match__"])) {
             accumulator = { "__match__": false };
           }
         }
@@ -139,7 +139,10 @@ function match(value) {
       return this;
     }
 
+    check(pattern, value);
     this.match = check(pattern, value);
+    this.match["__filter__"] = true;
+
     return this;
   }
 
@@ -178,6 +181,7 @@ function match(value) {
       this.result = callback(this.match);
     }
 
+    console.log(this);
     return this;
   }
 
@@ -186,12 +190,4 @@ function match(value) {
   }
 
   return this;
-}
-
-function factorial(n) {
-  return match(n)
-    .case("$n")
-      .when(x => x.n < 2) .run(() => 1)
-      .otherwise()        .run(x => x.n * factorial(x.n - 1))
-    .return();
 }
