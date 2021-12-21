@@ -30,7 +30,8 @@ function match(pattern, value) {
 
   if (
     ((pattern === undefined) && (value === undefined)) ||
-    ((pattern === null) && (value === null))
+    ((pattern === null) && (value === null)) ||
+    ((pattern === NaN) && (value === NaN))
   ) {
     return { "__match__": true };
   }
@@ -145,3 +146,5 @@ function run(a) {
 
   return run(a.slice(1));
 }
+
+console.log(match(["...$foo"], [2]));
