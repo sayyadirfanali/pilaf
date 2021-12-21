@@ -1,69 +1,63 @@
-# pilaf
-pilaf is a simple pattern-matching library for JavaScript which provides
+# Pilaf
+Pilaf is a simple pattern-matching library for JavaScript which provides
 recursive pattern-matching in the style of Erlang.
 
-if you're tired of writing chains of `if`, `else` and `switch` statements,
-pilaf can help you structure your code in the pattern-matching style popular in
+If you're tired of writing chains of `if`, `else` and `switch` statements,
+Pilaf can help you structure your code in the pattern-matching style popular in
 languages like Erlang and Haskell.
 
 ## Examples
-here is a function in traditional imperative-style in JavaScript
+
+Here is a simple recursive function to calculate the sum of an array written in
+traditional imperative style in JavaScript
 
 ```javascript
-function factorial(n) {
-  if (n < 2)
-    return 1;
-  else
-    return n * factorial(n - 1);
+
+function sum(a) {
+  if (a.length === 0) {
+    return a[0];
+  }
+
+  else {
+    return a[0] + sum(a.slice(0));
+  }
 }
+
 ```
 
-here is how one would write it using pilaf in pattern-matching style in JavaScript
+The same function be returned using Pilaf like
 
 ```javascript
 
-function factorial(n) {
-  return match(n)
-    .case("$a")
-      .when(x => x.a < 1) .run(() => 1)
-      .otherwise()        .run((x) => x.a * factorial(x.a - 1))
+function sum(a) {
+  match(a)
+    .case(["$a"])             .run(x => x.a)
+    .case(["$a", "...$rest"]) .run(x => x.a + sum(rest))
     .return();
 }
 
 ```
 
-here, the value `n` is matched against pattern `$n` and returns an object which
-contains the match result. the match result indicates if the match was
-successful.
+Pilaf provides function `match` which takes a value to be matched against and
+returns an objects which allows chaining of `case` and `run` calls. `case`
+takes a pattern and tries to match it against the value. If the match passes,
+`run` is executed which takes a callback and executes the callback on the match
+result from `case`.
 
-if the match is successful, it is passed through the filter in `when`.
+Even in this very simple example, it is easy to see that the pattern-matching declarative
+style is more concise and clear than traditional JavaScript.
 
-if the match is unsuccessful, the next `case` is checked.
+Pilaf also provides function `check` which just matches one pattern against one value.
 
-if the filter in `when` returns `true`, the callback in `run` is executed. the
-output of callback in `run` is returned by call to `return` in the end.
-
-if the filter returns `false`, `run` attached with `otherwise` is executed
-calls the function.
-
-Pilaf also provides `check` which just matches a pattern against a variable and
-returns the match result as shown below.
-
-```javascript
-
-> check("$a", 3)
-{ __match__: true, a: 3}
-
-```
-
-there are many types of available patterns which can be recursively matched to
-variables, arrays and objects.
+Pilaf features many different types of patterns which can be combined
+arbitratily effectively removing the need to use `if`, `else` and `switch` in
+the code.
 
 ### Variable Patterns
-variable patterns begin with `"$"`. the string after the `"$"` is the key which
+Variable patterns begin with `"$"`. The string after the `"$"` is the key which
 stores the value which can be accessed in `when` filters and `run` callbacks.
 
-variable patterns always match succesfully against any value.
+Variable patterns always match succesfully against any value.
 
 ```javascript
 
@@ -100,7 +94,7 @@ true
 ```
 
 ### Literal Patterns
-literal patterns match literals against values. they match successfully if the
+Literal patterns match literals against values. They match successfully if the
 pattern is exactly equal to the value
 
 ```javascript
@@ -124,8 +118,8 @@ pattern is exactly equal to the value
 
 
 ### Wildcard Patterns
-wildcard patterns begin with `"_"` and match any value just like variable
-patterns but discard the result. they are used when the result is not needed in
+Wildcard patterns begin with `"_"` and match any value just like variable
+patterns but discard the result. They are used when the result is not needed in
 further computation.
 
 ```javascript
@@ -142,7 +136,7 @@ further computation.
 ```
 
 ### Array Patterns
-array patterns are patterns which recursively match against arrays.
+Array patterns are patterns which recursively match against arrays.
 
 ```javascript
 
@@ -163,8 +157,8 @@ array patterns are patterns which recursively match against arrays.
 
 ```
 
-array patterns can also be used to match against arrays when the length of the
-array is unknown. if the last element of the array pattern starts with "...$",
+Array patterns can also be used to match against arrays when the length of the
+array is unknown. If the last element of the array pattern starts with `"...$"`,
 it binds to the rest of the array.   
 
 ```javascript
@@ -175,7 +169,7 @@ it binds to the rest of the array.
 ```
 
 ### Object Patterns
-object patterns work just like array patterns, but take objects as patterns.
+Object patterns work just like array patterns, but take objects as patterns.
 
 ```javascript
 
