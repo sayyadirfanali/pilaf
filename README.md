@@ -18,7 +18,7 @@ It begins with `$` and matches a variable of any type in JavaScript. The match
 object creates a key with the name supplied after `$` in the pattern which
 stores the value of the variable.
 
-It always return a `{ __match__: true }` in the match object.
+It always return a `true` in the match object.
 
 ```javascript
 
@@ -48,8 +48,8 @@ object would not contain the success status of the match but would instead
 contain the value of the variable in the key `__match__`.
 
 ### Equality Pattern
-It works like regular equality comparison and returns a `{ __match__: true }` match object if
-the pattern is equal to the value and a `false` match object otherwise.
+It works like regular equality comparison and returns a `true` in the match object if
+the pattern is equal to the value and a `false` in the match object otherwise.
 
 ```javascript
 
@@ -84,7 +84,7 @@ It works almost like a variable pattern except that it begins with a `_` and
 the match object discards the value. It's normally used when the value of the
 variable is not needed.
 
-It always returns `{ __match__: true }` in the match object.
+It always returns `true` in the match object.
 
 ```javascript
 
