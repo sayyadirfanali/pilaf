@@ -6,6 +6,9 @@ If you're tired of writing chains of `if`, `else` and `switch` statements,
 Pilaf can help you structure your code in the pattern-matching style popular in
 languages like Erlang and Haskell.
 
+Pilaf is implemented in less than 200 lines of vanilla JavaScript and is a
+standalone library with no any dependencies.
+
 ## Examples
 
 Here is a simple recursive function to calculate the sum of an array written in
@@ -194,11 +197,16 @@ Object patterns work just like array patterns, but take objects as patterns.
 
 ```
 
-## Dependencies
-Pilaf is written in vanilla JavaScript and doesn't feature any dependencies.
-
 ## Credits
-Pilaf is heavily inspired from [Match-Toy](https://github.com/AlfonsoFilho/match-toy).
+Pilaf is heavily inspired from
+[Match-Toy](https://github.com/AlfonsoFilho/match-toy). Match-Toy takes
+patterns in form of strings and parses them while Pilaf avoid parsing as it
+takes JavaScript literals as patterns. Hence, Match-Toy feature more patterns
+than Pilaf but is also larger in size.
+
+## Feedback
+Feel free to provide feedback, report issues and request new features. I'm also
+available at irfan@irfanali.org.
 
 ## License
 GNU General Public License v3.0

@@ -195,5 +195,3 @@ function factorial(n) {
       .otherwise()        .run(x => x.n * factorial(x.n - 1))
     .return();
 }
-
-console.log(check({ author: "J.R.R. Tolkien", books: [ "$a", "...$b" ] }, { author: "J.R.R. Tolkien", books: [ "The Hobbit", "The Lord of the Rings", "The Silmarilion" ] } ));
