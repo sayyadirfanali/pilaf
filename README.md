@@ -59,7 +59,7 @@ uses `if` and `else`.
 Pilaf provides `when` which acts like guard in Erlang and filters the value if
 the match is successful before executing `run`.
 
-The above function can be written using `when` as
+The above function can also be written using `when` as
 
 ```javascript
 
@@ -181,10 +181,11 @@ Object patterns work just like array patterns, but take objects as patterns.
 
 ## Credits
 Pilaf is heavily inspired from
-[Match-Toy](https://github.com/AlfonsoFilho/match-toy). Match-Toy takes
-patterns in form of strings and parses them while Pilaf avoid parsing as it
-takes JavaScript literals as patterns. Hence, Match-Toy feature more patterns
-than Pilaf but is also larger in size.
+[Match-Toy](https://github.com/AlfonsoFilho/match-toy).
+
+Match-Toy takes patterns as strings and parses them into structures. Pilaf
+avoids parsing as it takes JavaScript literals as patterns. Hence, Match-Toy
+features more patterns and is larger in size than Pilaf.
 
 ## Feedback
 Feel free to provide feedback, report issues and request new features. You can
