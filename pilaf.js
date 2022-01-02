@@ -1,24 +1,21 @@
-id = x => x;
-not = x => !x;
-isObject = x => typeof x === "object" && x !== null;
-isArray = x => isObject(x) && x.constructor.name === "Array";
-isBigInt = x => typeof x === "bigint";
-isBoolean = x => typeof x === "boolean";
-isNumber = x => typeof x === "number";
-isString = x => typeof x === "string";
+"use strict";
+
+let isObject = x => typeof(x) === "object" && x !== null;
+let isArray = x => isObject(x) && x.constructor.name === "Array";
+let isBigInt = x => typeof(x) === "bigint";
+let isBoolean = x => typeof(x) === "boolean";
+let isNumber = x => typeof(x) === "number";
+let isString = x => typeof(x) === "string";
 
 function check(pattern, value) {
   if (isString(pattern)) {
-    // Wildcard Pattern
     if (pattern[0] === "_")
       return { "__match__": true };
 
-    // Variable Pattern
     if (pattern[0] === "$")
       return { "__match__": true, [ pattern.slice(1) ]: value };
   }
 
-  // Primitive Pattern
   if (
     (isString(pattern) && isString(value)) ||
     (isNumber(pattern) && isNumber(value)) ||
@@ -36,7 +33,6 @@ function check(pattern, value) {
     return { "__match__": true };
   }
 
-  // Tail Pattern
   if (
     isArray(pattern) &&
     isArray(value) &&
@@ -84,45 +80,37 @@ function check(pattern, value) {
     return accumulator;
   }
 
-  // Array Pattern
   if (isArray(pattern) && isArray(value) && pattern.length === value.length) {
     let accumulator = { "__match__": true };
 
     pattern.forEach((x, i) => {
       if (accumulator["__match__"]) {
         let m = check(pattern[i], value[i]);
-        if (m["__match__"]) {
+
+        if (m["__match__"])
           Object.assign(accumulator, m);
-        }
-        if (not(m["__match__"])) {
+
+        else
           accumulator = { "__match__": false };
-        }
       }
     })
 
     return accumulator;
   }
 
-  // Object Pattern
   if (isObject(pattern) && isObject(value)) {
     const pKeys = Object.keys(pattern).sort();
-    const pLength = pKeys.length;
-
     const vKeys = Object.keys(value).sort();
-    const vLength = vKeys.length;
 
-    if (pLength === vLength && pKeys.every((x, i) => x === vKeys[i])) {
+    if ((pKeys.length === vKeys.length && pKeys.every((x, i) => x === vKeys[i]))) {
       let accumulator = { "__match__": true };
-
       pKeys.forEach((x, i) => {
         if (accumulator["__match__"]) {
           let m = check(pattern[pKeys[i]], value[vKeys[i]]);
-          if (m["__match__"]) {
+          if (m["__match__"])
             Object.assign(accumulator, m);
-          }
-          if (not(m["__match__"])) {
+          else
             accumulator = { "__match__": false };
-          }
         }
       })
 
@@ -134,60 +122,61 @@ function check(pattern, value) {
 }
 
 function match(value) {
-  this.case = (pattern) => {
-    if (this.result) {
-      return this;
+  let obj = {};
+
+  obj.case = (pattern) => {
+    if (obj.result) {
+      return obj;
     }
 
     check(pattern, value);
-    this.match = check(pattern, value);
-    this.match["__filter__"] = true;
+    obj.match = check(pattern, value);
+    obj.match["__filter__"] = true;
 
-    return this;
+    return obj;
   }
 
-  this.when = (filter) => {
-    if (this.result) {
-      return this;
+  obj.when = (filter) => {
+    if (obj.result) {
+      return obj;
     }
 
-    if (this.match["__match__"]) {
-      if (filter(this.match)) {
-        this.match["__filter__"] = true;
-        return this;
+    if (obj.match["__match__"]) {
+      if (filter(obj.match)) {
+        obj.match["__filter__"] = true;
+        return obj;
       }
 
-      this.match["__filter__"] = false;
+      obj.match["__filter__"] = false;
     }
 
-    return this;
+    return obj;
   }
 
-  this.otherwise = (filter) => {
-    if (this.result) {
-      return this;
+  obj.otherwise = (filter) => {
+    if (obj.result) {
+      return obj;
     }
 
-    this.match["__filter__"] = true;
-    return this;
+    obj.match["__filter__"] = true;
+    return obj;
   }
 
-  this.run = (callback) => {
-    if (this.result) {
-      return this;
+  obj.run = (callback) => {
+    if (obj.result) {
+      return obj;
     }
 
-    if (this.match["__match__"] && this.match["__filter__"]) {
-      this.result = callback(this.match);
+    if (obj.match["__match__"] && obj.match["__filter__"]) {
+      obj.result = callback(obj.match);
     }
 
-    console.log(this);
-    return this;
+    return obj;
   }
 
-  this.return = () => {
-    return this.result;
+  obj.return = () => {
+    return obj.result;
   }
 
-  return this;
+  return obj;
 }
