@@ -7,7 +7,7 @@ Pilaf can help you structure your code in the pattern-matching style popular in
 languages like Erlang and Haskell.
 
 Pilaf is implemented in less than 200 lines of vanilla JavaScript and is a
-standalone library with no any dependencies.
+standalone library with no dependencies.
 
 ## Examples
 
